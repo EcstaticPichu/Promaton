@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "promaton:block/automaton_controller_top",
+    "bottom": "promaton:block/automaton_controller_bottom",
+    "front": "promaton:block/automaton_controller_front",
+    "side": "promaton:block/automaton_controller_side"
+  }
+}

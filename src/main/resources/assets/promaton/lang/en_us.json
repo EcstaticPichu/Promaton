@@ -1,0 +1,8 @@
+{
+  "itemGroup.promaton": "Programmable Automatons",
+  "block.promaton.automaton_controller": "Automaton Controller",
+  "item.promaton.automaton_casing": "Automaton Casing",
+  "item.promaton.program": "Program",
+  "item.promaton.waypoint_wand": "Waypoint Wand",
+  "item.promaton.anchor_crystal": "Anchor Crystal"
+}
