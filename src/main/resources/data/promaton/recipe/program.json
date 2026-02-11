@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " R ",
+    " A ",
+    " S "
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "A": "minecraft:amethyst_shard",
+    "S": "minecraft:smooth_stone_slab"
+  },
+  "result": {
+    "id": "promaton:program",
+    "count": 1
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ENE",
+    "DMD",
+    "OLO"
+  ],
+  "key": {
+    "E": "minecraft:end_crystal",
+    "N": "minecraft:nether_star",
+    "D": "minecraft:diamond_block",
+    "M": "minecraft:netherite_ingot",
+    "O": "minecraft:obsidian",
+    "L": "minecraft:lodestone"
+  },
+  "result": {
+    "id": "promaton:anchor_crystal",
+    "count": 1
+  }
+}

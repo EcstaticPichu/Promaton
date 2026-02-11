@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KOC",
+    " RE",
+    " A "
+  ],
+  "key": {
+    "K": "minecraft:clock",
+    "O": "minecraft:observer",
+    "C": "minecraft:compass",
+    "R": "minecraft:crafter",
+    "E": "minecraft:cake",
+    "A": "minecraft:armor_stand"
+  },
+  "result": {
+    "id": "promaton:automaton_casing",
+    "count": 1
+  }
+}

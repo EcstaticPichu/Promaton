@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ICI",
+    "UAU",
+    "SDS"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:comparator",
+    "U": "minecraft:copper_ingot",
+    "A": "minecraft:amethyst_shard",
+    "S": "minecraft:smooth_stone",
+    "D": "minecraft:dispenser"
+  },
+  "result": {
+    "id": "promaton:automaton_controller",
+    "count": 1
+  }
+}

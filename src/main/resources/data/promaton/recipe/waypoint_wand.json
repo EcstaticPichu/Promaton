@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " E ",
+    " B ",
+    " C "
+  ],
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "B": "minecraft:blaze_rod",
+    "C": "minecraft:copper_ingot"
+  },
+  "result": {
+    "id": "promaton:waypoint_wand",
+    "count": 1
+  }
+}
