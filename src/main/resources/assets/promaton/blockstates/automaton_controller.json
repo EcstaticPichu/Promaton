@@ -1,8 +1,24 @@
 {
   "variants": {
-    "facing=north": { "model": "promaton:block/automaton_controller" },
-    "facing=east": { "model": "promaton:block/automaton_controller", "y": 90 },
-    "facing=south": { "model": "promaton:block/automaton_controller", "y": 180 },
-    "facing=west": { "model": "promaton:block/automaton_controller", "y": 270 }
+    "facing=north,indicator=dead": { "model": "promaton:block/automaton_controller" },
+    "facing=east,indicator=dead": { "model": "promaton:block/automaton_controller", "y": 90 },
+    "facing=south,indicator=dead": { "model": "promaton:block/automaton_controller", "y": 180 },
+    "facing=west,indicator=dead": { "model": "promaton:block/automaton_controller", "y": 270 },
+    "facing=north,indicator=error": { "model": "promaton:block/automaton_controller" },
+    "facing=east,indicator=error": { "model": "promaton:block/automaton_controller", "y": 90 },
+    "facing=south,indicator=error": { "model": "promaton:block/automaton_controller", "y": 180 },
+    "facing=west,indicator=error": { "model": "promaton:block/automaton_controller", "y": 270 },
+    "facing=north,indicator=idle": { "model": "promaton:block/automaton_controller" },
+    "facing=east,indicator=idle": { "model": "promaton:block/automaton_controller", "y": 90 },
+    "facing=south,indicator=idle": { "model": "promaton:block/automaton_controller", "y": 180 },
+    "facing=west,indicator=idle": { "model": "promaton:block/automaton_controller", "y": 270 },
+    "facing=north,indicator=ready": { "model": "promaton:block/automaton_controller" },
+    "facing=east,indicator=ready": { "model": "promaton:block/automaton_controller", "y": 90 },
+    "facing=south,indicator=ready": { "model": "promaton:block/automaton_controller", "y": 180 },
+    "facing=west,indicator=ready": { "model": "promaton:block/automaton_controller", "y": 270 },
+    "facing=north,indicator=running": { "model": "promaton:block/automaton_controller" },
+    "facing=east,indicator=running": { "model": "promaton:block/automaton_controller", "y": 90 },
+    "facing=south,indicator=running": { "model": "promaton:block/automaton_controller", "y": 180 },
+    "facing=west,indicator=running": { "model": "promaton:block/automaton_controller", "y": 270 }
   }
 }

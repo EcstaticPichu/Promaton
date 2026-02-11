@@ -24,7 +24,7 @@ public class ModItems {
         return item;
     }
 
-    public static final Item AUTOMATON_CASING = register("automaton_casing", Item::new, new Item.Properties());
+    public static final Item AUTOMATON_CASING = register("automaton_casing", Item::new, new Item.Properties().stacksTo(16));
     public static final Item PROGRAM = register("program", Item::new, new Item.Properties());
     public static final Item WAYPOINT_WAND = register("waypoint_wand", Item::new, new Item.Properties());
     public static final Item ANCHOR_CRYSTAL = register("anchor_crystal", Item::new, new Item.Properties());

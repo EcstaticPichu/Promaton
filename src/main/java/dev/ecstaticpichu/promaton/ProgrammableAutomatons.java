@@ -1,6 +1,8 @@
 package dev.ecstaticpichu.promaton;
 
+import dev.ecstaticpichu.promaton.block.ModBlockEntities;
 import dev.ecstaticpichu.promaton.block.ModBlocks;
+import dev.ecstaticpichu.promaton.block.ModMenuTypes;
 import dev.ecstaticpichu.promaton.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
@@ -23,6 +25,8 @@ public class ProgrammableAutomatons implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 		ModBlocks.initialize();
+		ModBlockEntities.initialize();
+		ModMenuTypes.initialize();
 		ModItems.registerModItems();
 	}
 }

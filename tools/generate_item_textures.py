@@ -362,8 +362,8 @@ def generate_slot_program():
     img = create_item_image()
     draw = ImageDraw.Draw(img)
 
-    # Vanilla slot sprite color (single gray)
-    c = (128, 128, 128, 255)
+    # Vanilla slot sprite color (matches vanilla's 85,85,85 used in smithing table etc.)
+    c = (85, 85, 85, 255)
 
     # Trace the inner edge where the gray tablet fill starts
     # The fill is from (3,3) to (12,13) with rounded corners
@@ -413,8 +413,8 @@ def generate_slot_casing():
     img = create_item_image()
     draw = ImageDraw.Draw(img)
 
-    # Vanilla slot sprite color (single gray)
-    c = (128, 128, 128, 255)
+    # Vanilla slot sprite color (matches vanilla's 85,85,85 used in smithing table etc.)
+    c = (85, 85, 85, 255)
 
     # Trace the inner fill of the automaton casing (front-view player)
 

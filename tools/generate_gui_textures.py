@@ -288,54 +288,55 @@ CTRL_GUI_Y = 28  # Leave space for 4 tabs
 # Panel bottom = 28 + 222 = 250, bottom border ~7px
 # Hotbar (18px) ends at 243, starts at 225
 # Gap (4px), player inv (54px) starts at 167
-# Gap (10px), control bar (20px) starts at 137
+# Gap (12px), control bar (20px) starts at 135
 # Gap (4px), content area starts at 45
 
 CTRL_PLAYER_INV_Y = 167  # Positioned near panel bottom
 CTRL_HOTBAR_Y = CTRL_PLAYER_INV_Y + 3 * 18 + 4  # = 225
 
-CTRL_CONTROL_BAR_Y = CTRL_PLAYER_INV_Y - 10 - 20  # = 137
+CTRL_CONTROL_BAR_Y = CTRL_PLAYER_INV_Y - 12 - 20  # = 135 (moved up 2px)
 CTRL_CONTROL_BAR_HEIGHT = 20
 
 CTRL_CONTENT_Y = CTRL_GUI_Y + 17  # = 45, after title area
-CTRL_CONTENT_HEIGHT = CTRL_CONTROL_BAR_Y - 4 - CTRL_CONTENT_Y  # = 88
+CTRL_CONTENT_HEIGHT = CTRL_CONTROL_BAR_Y - 4 - CTRL_CONTENT_Y  # = 86
 
 
 def draw_controller_base(draw, gui_x, gui_y, gui_width, gui_height, include_clear_button=False):
     """Draw the common elements for all Controller Interface tabs.
 
     Args:
-        include_clear_button: If True, adds a Clear button at the end of the control bar (for Logs tab)
+        include_clear_button: If True, adds a third button at the end of the control bar (Clear/Open)
     """
 
     # Draw main panel background
     draw_panel_background(draw, gui_x, gui_y, gui_width, gui_height)
 
-    # Horizontal control bar: [Program Slot][Run/Stop] | [Casing Slot][Summon] [| Clear]
+    # Horizontal control bar: [Program Slot][Run] | [Casing Slot][Summon] [| Clear/Open]
     bar_y = CTRL_CONTROL_BAR_Y
     bar_x = gui_x + 7
 
-    # Use narrower buttons to fit Clear button when needed (consistent across all tabs)
-    btn_width = 35
+    # Separate widths: Run is narrow (28px), Summon is wider (42px)
+    run_btn_width = 28
+    summon_btn_width = 42
 
-    # Left group: Program slot + Run/Stop button
+    # Left group: Program slot + Run button
     draw_slot(draw, bar_x, bar_y + 1)  # +1 to center in 20px bar
     run_btn_x = bar_x + 18 + 3
-    draw_button_area(draw, run_btn_x, bar_y + 1, btn_width, 18)
+    draw_button_area(draw, run_btn_x, bar_y + 1, run_btn_width, 18)
 
     # Divider line (vertical) - centered between groups
-    div_x = run_btn_x + btn_width + 3
+    div_x = run_btn_x + run_btn_width + 3
     draw_separator_line(draw, div_x, bar_y + 2, div_x, bar_y + CTRL_CONTROL_BAR_HEIGHT - 2)
 
-    # Right group: Casing slot + Summon button
+    # Right group: Casing slot + Summon button (shifted left)
     casing_x = div_x + 5
     draw_slot(draw, casing_x, bar_y + 1)
     summon_btn_x = casing_x + 18 + 3
-    draw_button_area(draw, summon_btn_x, bar_y + 1, btn_width, 18)
+    draw_button_area(draw, summon_btn_x, bar_y + 1, summon_btn_width, 18)
 
-    # Optional Clear button (for Logs tab)
+    # Optional third button (Clear for Logs, Open for Skin)
     if include_clear_button:
-        div2_x = summon_btn_x + btn_width + 3
+        div2_x = summon_btn_x + summon_btn_width + 3
         draw_separator_line(draw, div2_x, bar_y + 2, div2_x, bar_y + CTRL_CONTROL_BAR_HEIGHT - 2)
         clear_btn_x = div2_x + 5
         clear_btn_width = gui_x + gui_width - 7 - clear_btn_x  # Fill to right edge
@@ -483,52 +484,43 @@ def generate_controller_logs():
 def generate_controller_skin():
     """
     Generate Controller Interface SKIN tab.
-    Uses same panel size as other controller tabs (176×222) but NO control bar.
+    Uses same panel size and control bar as other controller tabs.
     Layout: Preview (left), skin list (middle), scroll track (right)
+    Content area is 86px tall (same as other tabs).
     """
     img = create_image(256, 256)
     draw = ImageDraw.Draw(img)
 
-    # Use standard controller panel dimensions (matches other tabs)
-    gui_width = CTRL_GUI_WIDTH  # 176
-    gui_height = CTRL_GUI_HEIGHT  # 222
-    gui_x = CTRL_GUI_X
-    gui_y = CTRL_GUI_Y  # 28
+    gui_x, gui_y = CTRL_GUI_X, CTRL_GUI_Y
+    gui_width, gui_height = CTRL_GUI_WIDTH, CTRL_GUI_HEIGHT
 
-    # Draw main panel (no control bar)
-    draw_panel_background(draw, gui_x, gui_y, gui_width, gui_height)
+    # Draw common elements (panel, control bar with Open button, player inventory, hotbar)
+    draw_controller_base(draw, gui_x, gui_y, gui_width, gui_height, include_clear_button=True)
 
-    # Content layout - no control bar means more space for skin content
-    content_y = gui_y + 17  # After title area
-
-    # Player inventory at same position as other controller tabs
-    player_inv_y = CTRL_PLAYER_INV_Y  # 155
-    hotbar_y = CTRL_HOTBAR_Y  # 213
-
-    # Content height: from title area to gap before player inventory
-    content_height = player_inv_y - 10 - content_y  # 128px (vs 76px with control bar!)
+    # Content area (same dimensions as other tabs)
+    content_x = gui_x + 7
+    content_y = CTRL_CONTENT_Y  # 45
+    content_height = CTRL_CONTENT_HEIGHT  # 86
 
     preview_width = 51
     gap = 4
     scroll_track_width = 14
-    gap_before_scroll = 2
+    gap_before_scroll = 4  # 2px wider than before for visual separation
     list_width = gui_width - 14 - preview_width - gap - gap_before_scroll - scroll_track_width
 
     # Preview area (black, for entity rendering)
-    preview_x = gui_x + 7
-    preview_height = 70
+    preview_x = content_x
+    btn_height = 18  # Same height as control bar buttons
+    btn_gap = 4
+    preview_height = content_height - btn_gap - btn_height  # = 64, button bottom flush with list bottom
     draw.rectangle([preview_x, content_y, preview_x + preview_width - 1, content_y + preview_height - 1],
                    fill=COLORS['border_black'])
 
-    # Buttons under preview (stacked vertically)
-    btn_height = 16
-    btn_gap = 4
+    # Select button under preview (bottom flush with list area bottom)
     select_btn_y = content_y + preview_height + btn_gap
     draw_button_area(draw, preview_x, select_btn_y, preview_width, btn_height)
-    open_btn_y = select_btn_y + btn_height + btn_gap
-    draw_button_area(draw, preview_x, open_btn_y, preview_width, btn_height)
 
-    # Skin list (recessed, full height)
+    # Skin list (recessed, full content height)
     list_x = preview_x + preview_width + gap
     draw_recessed_area(draw, list_x, content_y, list_width, content_height)
 
@@ -539,12 +531,6 @@ def generate_controller_skin():
     draw.line([(scroll_x, content_y + content_height - 1), (scroll_x + scroll_track_width - 1, content_y + content_height - 1)], fill=COLORS['border_white'])
     draw.line([(scroll_x + scroll_track_width - 1, content_y), (scroll_x + scroll_track_width - 1, content_y + content_height - 1)], fill=COLORS['border_white'])
     draw.rectangle([scroll_x + 1, content_y + 1, scroll_x + scroll_track_width - 2, content_y + content_height - 2], fill=COLORS['slot_fill'])
-
-    # Player inventory (same position as other controller tabs)
-    draw_slot_grid(draw, gui_x + 7, player_inv_y, 9, 3)
-
-    # Hotbar
-    draw_slot_grid(draw, gui_x + 7, hotbar_y, 9, 1)
 
     # Fix corners
     fix_panel_corners(draw, gui_x, gui_y, gui_width, gui_height)
