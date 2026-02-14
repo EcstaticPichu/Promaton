@@ -57,8 +57,8 @@ public class AutomatonControllerScreen extends AbstractContainerScreen<Automaton
 
     // Tab bar constants
     private static final int TAB_WIDTH = 28;
-    private static final int TAB_ACTIVE_HEIGHT = 20;
-    private static final int TAB_INACTIVE_HEIGHT = 18;
+    private static final int TAB_ACTIVE_HEIGHT = 24;
+    private static final int TAB_INACTIVE_HEIGHT = 22;
     private static final int TAB_START_X = 5;
 
     // Content area (GUI-relative)
@@ -203,6 +203,19 @@ public class AutomatonControllerScreen extends AbstractContainerScreen<Automaton
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+        renderTabTooltip(guiGraphics, mouseX, mouseY);
+    }
+
+    private void renderTabTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int panelTop = this.topPos;
+        for (int i = 0; i < 4; i++) {
+            int tabX = this.leftPos + TAB_START_X + i * (TAB_WIDTH + 2);
+            int tabTop = panelTop - (i == this.menu.getActiveTab() ? TAB_ACTIVE_HEIGHT : TAB_INACTIVE_HEIGHT);
+            if (mouseX >= tabX && mouseX < tabX + TAB_WIDTH && mouseY >= tabTop && mouseY < panelTop) {
+                guiGraphics.setTooltipForNextFrame(TAB_TITLES[i], mouseX, mouseY);
+                return;
+            }
+        }
     }
 
     @Override
@@ -245,42 +258,116 @@ public class AutomatonControllerScreen extends AbstractContainerScreen<Automaton
             int tabX = this.leftPos + TAB_START_X + i * (TAB_WIDTH + 2);
 
             if (i == activeTab) {
-                int tabTop = panelTop - TAB_ACTIVE_HEIGHT;
-
-                // Fill: panel color, extends 4px below panel top to cover border + highlight
-                guiGraphics.fill(tabX, tabTop, tabX + TAB_WIDTH, panelTop + 4, 0xFFC6C6C6);
-
-                // Top border (black)
-                guiGraphics.fill(tabX + 1, tabTop, tabX + TAB_WIDTH - 1, tabTop + 1, 0xFF000000);
-                // Left border (black, stops at panel top - open at bottom)
-                guiGraphics.fill(tabX, tabTop + 1, tabX + 1, panelTop, 0xFF000000);
-                // Right border (black, stops at panel top - open at bottom)
-                guiGraphics.fill(tabX + TAB_WIDTH - 1, tabTop + 1, tabX + TAB_WIDTH, panelTop, 0xFF000000);
-
-                // White highlight - top inside
-                guiGraphics.fill(tabX + 1, tabTop + 1, tabX + TAB_WIDTH - 1, tabTop + 2, 0xFFFFFFFF);
-                // White highlight - left inside
-                guiGraphics.fill(tabX + 1, tabTop + 2, tabX + 2, panelTop, 0xFFFFFFFF);
+                renderActiveTab(guiGraphics, tabX, panelTop);
             } else {
-                int tabTop = panelTop - TAB_INACTIVE_HEIGHT;
-
-                // Fill: darker gray, extends to panel top
-                guiGraphics.fill(tabX, tabTop, tabX + TAB_WIDTH, panelTop, 0xFF8B8B8B);
-                // Top border (dark)
-                guiGraphics.fill(tabX + 1, tabTop, tabX + TAB_WIDTH - 1, tabTop + 1, 0xFF373737);
-                // Left border (dark)
-                guiGraphics.fill(tabX, tabTop + 1, tabX + 1, panelTop, 0xFF373737);
-                // Right border (dark)
-                guiGraphics.fill(tabX + TAB_WIDTH - 1, tabTop + 1, tabX + TAB_WIDTH, panelTop, 0xFF373737);
+                renderInactiveTab(guiGraphics, tabX, panelTop);
             }
 
-            // Tab icon (centered in tab)
-            int tabTop = (i == activeTab) ? panelTop - TAB_ACTIVE_HEIGHT : panelTop - TAB_INACTIVE_HEIGHT;
-            int tabHeight = (i == activeTab) ? TAB_ACTIVE_HEIGHT : TAB_INACTIVE_HEIGHT;
+            // Tab icon at a fixed position — same Y regardless of active/inactive
+            int inactiveTop = panelTop - TAB_INACTIVE_HEIGHT;
             int iconX = tabX + (TAB_WIDTH - 16) / 2;
-            int iconY = tabTop + (tabHeight - 16) / 2;
+            int iconY = inactiveTop + (TAB_INACTIVE_HEIGHT - 16) / 2 + 1;
             guiGraphics.renderItem(TAB_ICONS[i], iconX, iconY);
         }
+    }
+
+    /**
+     * Draw an active tab matching the panel border style (draw_panel_background):
+     * - Rounded top corners (asymmetric: TL 2+1, TR 3+2+1)
+     * - 1px black outer, 2px white highlight (top+left), 2px dark shadow (right)
+     * - Bottom open: extends into panel's border zone with corner rounding
+     *   that curves into the panel's top border
+     */
+    private void renderActiveTab(GuiGraphics g, int tabX, int panelTop) {
+        int tabTop = panelTop - TAB_ACTIVE_HEIGHT;
+        int w = TAB_WIDTH;
+
+        int BLACK = 0xFF000000;
+        int WHITE = 0xFFFFFFFF;
+        int FILL = 0xFFC6C6C6;
+        int SHADOW = 0xFF555555;
+
+        // Panel border = 3px (1px black + 2px white). Tab extends through these rows.
+        int borderBottom = panelTop + 3;
+
+        // --- Fill (sections for top corner transparency) ---
+        g.fill(tabX + 2, tabTop, tabX + w - 3, tabTop + 1, FILL);          // row 0
+        g.fill(tabX + 1, tabTop + 1, tabX + w - 2, tabTop + 2, FILL);      // row 1
+        g.fill(tabX, tabTop + 2, tabX + w - 1, tabTop + 3, FILL);           // row 2
+        g.fill(tabX, tabTop + 3, tabX + w, borderBottom, FILL);              // rows 3+ through panel border
+
+        // --- Black border ---
+        g.fill(tabX + 2, tabTop, tabX + w - 3, tabTop + 1, BLACK);          // top edge
+        g.fill(tabX + 1, tabTop + 1, tabX + 2, tabTop + 2, BLACK);          // TL corner (1,1)
+        g.fill(tabX + w - 3, tabTop + 1, tabX + w - 2, tabTop + 2, BLACK);  // TR corner (w-3,1)
+        g.fill(tabX + w - 2, tabTop + 2, tabX + w - 1, tabTop + 3, BLACK);  // TR corner (w-2,2)
+        g.fill(tabX, tabTop + 2, tabX + 1, borderBottom, BLACK);             // left edge through panel
+        g.fill(tabX + w - 1, tabTop + 3, tabX + w, borderBottom, BLACK);     // right edge through panel
+
+        // --- White highlight (top + left, 2px) ---
+        g.fill(tabX + 2, tabTop + 1, tabX + w - 3, tabTop + 2, WHITE);      // top row 1
+        g.fill(tabX + 2, tabTop + 2, tabX + w - 3, tabTop + 3, WHITE);      // top row 2
+        g.fill(tabX + 1, tabTop + 2, tabX + 2, borderBottom, WHITE);         // left col 1
+        g.fill(tabX + 2, tabTop + 3, tabX + 3, borderBottom, WHITE);         // left col 2
+
+        // --- Dark shadow (right, 2px) ---
+        g.fill(tabX + w - 3, tabTop + 3, tabX + w - 2, borderBottom, SHADOW);  // col w-3
+        g.fill(tabX + w - 2, tabTop + 3, tabX + w - 1, borderBottom, SHADOW);  // col w-2
+
+        // --- Bottom corner rounding (curves into panel's top border) ---
+        // Bottom-left: at panelTop+1,+2 the left border curves inward
+        g.fill(tabX, panelTop + 1, tabX + 1, panelTop + 3, WHITE);           // col 0 becomes panel highlight
+        g.fill(tabX + 1, panelTop + 1, tabX + 2, panelTop + 2, WHITE);       // corner pixel at (1, +1)
+        // Bottom-right: at panelTop+1,+2 the right border curves inward
+        g.fill(tabX + w - 1, panelTop + 1, tabX + w, panelTop + 3, WHITE);   // col w-1 becomes panel highlight
+        g.fill(tabX + w - 2, panelTop + 2, tabX + w - 1, panelTop + 3, WHITE); // (w-2, +2) becomes highlight
+    }
+
+    /**
+     * Draw an inactive tab with the same panel border style as the active tab:
+     * - Same asymmetric top corner rounding (TL 2+1, TR 3+2+1)
+     * - 1px black outer, 2px white highlight (top+left), 2px dark shadow (right)
+     * - No bottom border (sits flush against panel's top edge)
+     * - Darker fill (#8B8B8B)
+     */
+    private void renderInactiveTab(GuiGraphics g, int tabX, int panelTop) {
+        int tabTop = panelTop - TAB_INACTIVE_HEIGHT;
+        int w = TAB_WIDTH;
+
+        int BLACK = 0xFF000000;
+        int WHITE = 0xFFFFFFFF;
+        int FILL = 0xFF8B8B8B;
+        int SHADOW = 0xFF555555;
+
+        // --- Fill (top corners only, bottom is flat against panel) ---
+        // Top-left: 2+1, Top-right: 3+2+1
+        g.fill(tabX + 2, tabTop, tabX + w - 3, tabTop + 1, FILL);          // row 0
+        g.fill(tabX + 1, tabTop + 1, tabX + w - 2, tabTop + 2, FILL);      // row 1
+        g.fill(tabX, tabTop + 2, tabX + w - 1, tabTop + 3, FILL);           // row 2
+        g.fill(tabX, tabTop + 3, tabX + w, panelTop, FILL);                  // rows 3 to panelTop
+
+        // --- Black border ---
+        // Top
+        g.fill(tabX + 2, tabTop, tabX + w - 3, tabTop + 1, BLACK);
+        // Left — extends to panelTop
+        g.fill(tabX, tabTop + 2, tabX + 1, panelTop, BLACK);
+        // Right — extends to panelTop
+        g.fill(tabX + w - 1, tabTop + 3, tabX + w, panelTop, BLACK);
+        // TL corner: (1,1)
+        g.fill(tabX + 1, tabTop + 1, tabX + 2, tabTop + 2, BLACK);
+        // TR corners: (w-3,1), (w-2,2)
+        g.fill(tabX + w - 3, tabTop + 1, tabX + w - 2, tabTop + 2, BLACK);
+        g.fill(tabX + w - 2, tabTop + 2, tabX + w - 1, tabTop + 3, BLACK);
+
+        // --- White highlight (top + left, 2px) ---
+        g.fill(tabX + 2, tabTop + 1, tabX + w - 3, tabTop + 2, WHITE);     // top row 1
+        g.fill(tabX + 2, tabTop + 2, tabX + w - 3, tabTop + 3, WHITE);     // top row 2
+        g.fill(tabX + 1, tabTop + 2, tabX + 2, panelTop, WHITE);            // left col 1
+        g.fill(tabX + 2, tabTop + 3, tabX + 3, panelTop, WHITE);            // left col 2
+
+        // --- Dark shadow (right only, 2px) ---
+        g.fill(tabX + w - 3, tabTop + 3, tabX + w - 2, panelTop, SHADOW);  // right col w-3
+        g.fill(tabX + w - 2, tabTop + 3, tabX + w - 1, panelTop, SHADOW);  // right col w-2
     }
 
     private void renderStatusTab(GuiGraphics guiGraphics) {
