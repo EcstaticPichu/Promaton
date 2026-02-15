@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "KOC",
-    " RE",
+    "HRE",
     " A "
   ],
   "key": {
@@ -11,7 +11,8 @@
     "C": "minecraft:compass",
     "R": "minecraft:crafter",
     "E": "minecraft:cake",
-    "A": "minecraft:armor_stand"
+    "A": "minecraft:armor_stand",
+    "H": "minecraft:chest"
   },
   "result": {
     "id": "promaton:automaton_casing",
