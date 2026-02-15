@@ -26,5 +26,10 @@
   "gui.promaton.status.sleeping": "Sleeping",
   "gui.promaton.status.working": "Working",
   "gui.promaton.status.companion": "Companion",
-  "gui.promaton.no_automaton": "No Automaton"
+  "gui.promaton.no_automaton": "No Automaton",
+  "entity.promaton.automaton": "Automaton",
+  "container.promaton.automaton": "Automaton",
+  "gui.promaton.automaton.tab.inventory": "Inventory",
+  "gui.promaton.automaton.tab.skin": "Skin",
+  "gui.promaton.automaton.button.enlist": "Enlist"
 }
