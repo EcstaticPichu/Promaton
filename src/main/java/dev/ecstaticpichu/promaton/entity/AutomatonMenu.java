@@ -22,6 +22,7 @@ public class AutomatonMenu extends AbstractContainerMenu {
     private final ContainerData containerData;
     @Nullable
     private final LivingEntity automaton;
+    private final int entityId;
 
     // Slot index ranges
     public static final int EQUIP_SLOT_START = 0;   // 6 equipment slots (H, C, L, B, Off, Main)
@@ -59,21 +60,22 @@ public class AutomatonMenu extends AbstractContainerMenu {
     // Client constructor (from network)
     public AutomatonMenu(int syncId, Inventory playerInventory, int entityId) {
         this(syncId, playerInventory, new SimpleContainer(AutomatonEntity.INVENTORY_SIZE),
-                new SimpleContainerData(2), null);
+                new SimpleContainerData(2), null, entityId);
     }
 
     // Server constructor
     public AutomatonMenu(int syncId, Inventory playerInventory, AutomatonEntity automaton) {
-        this(syncId, playerInventory, automaton, automaton.getContainerData(), automaton);
+        this(syncId, playerInventory, automaton, automaton.getContainerData(), automaton, automaton.getId());
     }
 
     private AutomatonMenu(int syncId, Inventory playerInventory,
                            Container automatonInventory, ContainerData containerData,
-                           @Nullable LivingEntity automaton) {
+                           @Nullable LivingEntity automaton, int entityId) {
         super(ModMenuTypes.AUTOMATON, syncId);
         this.automatonInventory = automatonInventory;
         this.containerData = containerData;
         this.automaton = automaton;
+        this.entityId = entityId;
 
         checkContainerSize(automatonInventory, AutomatonEntity.INVENTORY_SIZE);
         checkContainerDataCount(containerData, 2);
@@ -221,6 +223,10 @@ public class AutomatonMenu extends AbstractContainerMenu {
 
     public int getAutomatonStatus() {
         return this.containerData.get(DATA_AUTOMATON_STATUS);
+    }
+
+    public int getEntityId() {
+        return this.entityId;
     }
 
     // --- Custom Slot for Entity Equipment ---

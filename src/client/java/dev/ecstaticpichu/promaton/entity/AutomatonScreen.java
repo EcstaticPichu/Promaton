@@ -8,6 +8,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -60,6 +61,16 @@ public class AutomatonScreen extends AbstractContainerScreen<AutomatonMenu> {
     private static final int CONTENT_X = 6;
     private static final int CONTENT_Y = 17;
     private static final int INFO_HEIGHT = 38;
+
+    // HUD-style heart sprites (9x9 each)
+    private static final Identifier HEART_CONTAINER = Identifier.withDefaultNamespace("textures/gui/sprites/hud/heart/container.png");
+    private static final Identifier HEART_FULL = Identifier.withDefaultNamespace("textures/gui/sprites/hud/heart/full.png");
+    private static final Identifier HEART_HALF = Identifier.withDefaultNamespace("textures/gui/sprites/hud/heart/half.png");
+
+    // HUD-style food sprites (9x9 each)
+    private static final Identifier FOOD_EMPTY = Identifier.withDefaultNamespace("textures/gui/sprites/hud/food_empty.png");
+    private static final Identifier FOOD_FULL = Identifier.withDefaultNamespace("textures/gui/sprites/hud/food_full.png");
+    private static final Identifier FOOD_HALF = Identifier.withDefaultNamespace("textures/gui/sprites/hud/food_half.png");
 
     // Enlist button position (GUI-relative)
     private static final int ENLIST_BTN_X = 119;
@@ -167,17 +178,75 @@ public class AutomatonScreen extends AbstractContainerScreen<AutomatonMenu> {
     }
 
     private void renderInventoryTab(GuiGraphics guiGraphics) {
-        // Placeholder info panel text
+        // Look up entity on client for real data
+        float health = 20f;
+        float maxHealth = 20f;
+        float hunger = 20f;
+        String restStatus = "tired";
+        int xpBuffer = 0;
+
+        if (this.minecraft != null && this.minecraft.level != null) {
+            Entity entity = this.minecraft.level.getEntity(this.menu.getEntityId());
+            if (entity instanceof AutomatonEntity automaton) {
+                health = automaton.getHealth();
+                maxHealth = automaton.getMaxHealth();
+                hunger = automaton.getHunger();
+                restStatus = automaton.getRestStatus();
+                xpBuffer = automaton.getXPBuffer();
+            }
+        }
+
         int x = this.leftPos + CONTENT_X + 4;
         int y = this.topPos + CONTENT_Y + 4;
-        guiGraphics.drawString(this.font, Component.literal("Name: Automaton"), x, y, 0xFF404040, false);
-        guiGraphics.drawString(this.font, Component.literal("Status: Idle"), x, y + 10, 0xFF404040, false);
-        guiGraphics.drawString(this.font, Component.literal("Health: 20/20"), x, y + 20, 0xFF404040, false);
-
         int rx = this.leftPos + CONTENT_X + 86;
-        guiGraphics.drawString(this.font, Component.literal("Controller: None"), rx, y, 0xFF404040, false);
-        guiGraphics.drawString(this.font, Component.literal("Rest: Tired"), rx, y + 10, 0xFF404040, false);
-        guiGraphics.drawString(this.font, Component.literal("Hunger: 20/20"), rx, y + 20, 0xFF404040, false);
+        int rightEdge = this.leftPos + CONTENT_X + 161;
+        int textColor = 0xFF404040;
+
+        // Row 1: Automaton name (left) / XP (right)
+        guiGraphics.drawString(this.font, Component.literal("Automaton"), x, y, textColor, false);
+        Component xpText = Component.literal("XP: " + xpBuffer);
+        guiGraphics.drawString(this.font, xpText, rightEdge - this.font.width(xpText), y, textColor, false);
+
+        // Row 2: Status (left-aligned) / Rest (right-aligned via translation key)
+        guiGraphics.drawString(this.font, Component.literal("Idle"), x, y + 10, textColor, false);
+        Component restComponent = Component.translatable("gui.promaton.automaton.rest." + restStatus);
+        guiGraphics.drawString(this.font, restComponent, rightEdge - this.font.width(restComponent), y + 10, textColor, false);
+
+        // Row 3: Heart icons (left) and hunger icons (right)
+        int iconY = y + 21;
+        renderHeartBar(guiGraphics, x - 4, iconY, health, maxHealth);
+        renderHungerBar(guiGraphics, rx - 3, iconY, hunger);
+    }
+
+    private void renderHeartBar(GuiGraphics g, int x, int y, float health, float maxHealth) {
+        int hearts = (int) Math.ceil(maxHealth / 2.0f);
+        for (int i = 0; i < hearts; i++) {
+            int hx = x + i * 8;
+            // Draw container (background)
+            g.blit(RenderPipelines.GUI_TEXTURED, HEART_CONTAINER, hx, y, 0f, 0f, 9, 9, 9, 9);
+            // Draw full or half heart
+            float threshold = i * 2;
+            if (health > threshold + 1) {
+                g.blit(RenderPipelines.GUI_TEXTURED, HEART_FULL, hx, y, 0f, 0f, 9, 9, 9, 9);
+            } else if (health > threshold) {
+                g.blit(RenderPipelines.GUI_TEXTURED, HEART_HALF, hx, y, 0f, 0f, 9, 9, 9, 9);
+            }
+        }
+    }
+
+    private void renderHungerBar(GuiGraphics g, int x, int y, float hunger) {
+        for (int i = 0; i < 10; i++) {
+            int hx = x + i * 8;
+            // Draw empty background
+            g.blit(RenderPipelines.GUI_TEXTURED, FOOD_EMPTY, hx, y, 0f, 0f, 9, 9, 9, 9);
+            // Draw full or half shank
+            float threshold = i * 2;
+            if (hunger > threshold + 1) {
+                g.blit(RenderPipelines.GUI_TEXTURED, FOOD_FULL, hx, y, 0f, 0f, 9, 9, 9, 9);
+            } else if (hunger > threshold) {
+                g.blit(RenderPipelines.GUI_TEXTURED, FOOD_HALF, hx, y, 0f, 0f, 9, 9, 9, 9);
+            }
+        }
     }
 
     private void renderSkinTab(GuiGraphics guiGraphics) {

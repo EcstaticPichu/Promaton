@@ -31,5 +31,8 @@
   "container.promaton.automaton": "Automaton",
   "gui.promaton.automaton.tab.inventory": "Inventory",
   "gui.promaton.automaton.tab.skin": "Skin",
-  "gui.promaton.automaton.button.enlist": "Enlist"
+  "gui.promaton.automaton.button.enlist": "Enlist",
+  "gui.promaton.automaton.rest.tired": "Tired",
+  "gui.promaton.automaton.rest.rested": "Rested",
+  "gui.promaton.automaton.rest.well_rested": "Well Rested"
 }
